@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍐 Kiwi Coins</title>
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: monospace;
+      margin: 20px;
+    }
+    .wrap {
+      max-width: 600px;
+      margin: auto;
+      border: 3px solid #fff;
+      padding: 20px;
+    }
+    h1 { text-align: center; }
+    .balance {
+      border: 2px solid #fff;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #000;
+      color: #fff;
+      border: 2px solid #fff;
+      padding: 8px 12px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    input {
+      background: #111;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 6px;
+      margin-top: 5px;
+      width: 90%;
+    }
+    .card {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #fff;
+    }
+    .stonk {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>🍐 Kiwi Coins</h1>
+    <div class="balance" id="balance">0 Kiwi</div>
+
+    <!-- Mining Section -->
+    <div class="card">
+      <h3>Mining Area</h3>
+      <p>Earn 10 Kiwi for every full hour of uptime.</p>
+      <button onclick="mine()">Mine Kiwi</button>
+      <div id="mining-result"></div>
+    </div>
+
+    <!-- Transfer Section -->
+    <div class="card">
+      <h3>Transfer Kiwi</h3>
+      <input type="number" id="transfer-amount" placeholder="Amount to Transfer" />
+      <button onclick="transferKiwi()">Generate Transfer Code</button>
+      <div id="transfer-result"></div>
+    </div>
+
+    <!-- Redeem Section -->
+    <div class="card">
+      <h3>Redeem Kiwi</h3>
+      <input type="text" id="redeem-code" placeholder="Enter Redeem Code" />
+      <button onclick="redeemKiwi()">Redeem</button>
+      <div id="redeem-result"></div>
+    </div>
+
+    <!-- Stonks Section -->
+    <div class="card">
+      <h3>📈 Kiwi Stonks Market</h3>
+      <div id="stonks"></div>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------------
+    // Persistent Data
+    // -----------------------------
+    let balance = parseFloat(localStorage.getItem('kiwi_balance')) || 2000;
+    let lastMine = parseFloat(localStorage.getItem('kiwi_lastMine')) || Date.now();
+    const stonks = JSON.parse(localStorage.getItem('kiwi_stonks')) || {
+      wheat: { price: 100, owned: 0 },
+      pokemon: { price: 250, owned: 0 },
+      gems: { price: 400, owned: 0 },
+      banana: { price: 75, owned: 0 },
+      techChip: { price: 600, owned: 0 },
+      silver: { price: 500, owned: 0 },
+      iron: { price: 300, owned: 0 },
+      kiwiJuice: { price: 120, owned: 0 }
+    };
+    const redeemedCodes = JSON.parse(localStorage.getItem('kiwi_redeemed')) || [];
+
+    // -----------------------------
+    // Save & Update
+    // -----------------------------
+    function saveData() {
+      localStorage.setItem('kiwi_balance', balance);
+      localStorage.setItem('kiwi_lastMine', lastMine);
+      localStorage.setItem('kiwi_stonks', JSON.stringify(stonks));
+      localStorage.setItem('kiwi_redeemed', JSON.stringify(redeemedCodes));
+    }
+
+    function updateBalance() {
+      document.getElementById('balance').textContent = `${balance.toFixed(2)} Kiwi`;
+      saveData();
+    }
+
+    // -----------------------------
+    // Mining
+    // -----------------------------
+    function mine() {
+      const now = Date.now();
+      const hoursPassed = Math.floor((now - lastMine) / (1000 * 60 * 60));
+      if (hoursPassed >= 1) {
+        const reward = hoursPassed * 10;
+        balance += reward;
+        lastMine = now;
+        document.getElementById('mining-result').textContent = `⛏️ You mined ${reward} Kiwi (${hoursPassed}h uptime).`;
+        updateBalance();
+      } else {
+        document.getElementById('mining-result').textContent = "⏳ You need at least 1 hour of uptime before mining again.";
+      }
+    }
+
+    // -----------------------------
+    // Transfer & Redeem System
+    // -----------------------------
+    const transferCodes = JSON.parse(localStorage.getItem('kiwi_codes')) || {};
+
+    function generateCode() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let code = "";
+      for (let i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+      return code;
+    }
+
+    function transferKiwi() {
+      const amt = parseFloat(document.getElementById('transfer-amount').value);
+      if (isNaN(amt) || amt <= 0 || amt > balance) {
+        document.getElementById('transfer-result').textContent = "❌ Invalid amount.";
+        return;
+      }
+
+      const code = generateCode();
+      transferCodes[code] = amt;
+      balance -= amt;
+
+      localStorage.setItem('kiwi_codes', JSON.stringify(transferCodes));
+      updateBalance();
+
+      document.getElementById('transfer-result').innerHTML = `
+        ✅ Transfer Code Generated:<br><b>${code}</b><br>
+        Share this code with someone to redeem ${amt} Kiwi.
+      `;
+    }
+
+    function redeemKiwi() {
+      const code = document.getElementById('redeem-code').value.trim().toUpperCase();
+      if (redeemedCodes.includes(code)) {
+        document.getElementById('redeem-result').textContent = "⚠️ Code already redeemed!";
+        return;
+      }
+
+      if (transferCodes[code]) {
+        const amt = transferCodes[code];
+        balance += amt;
+        redeemedCodes.push(code);
+        delete transferCodes[code];
+        document.getElementById('redeem-result').textContent = `🎉 Redeemed ${amt} Kiwi successfully!`;
+        localStorage.setItem('kiwi_codes', JSON.stringify(transferCodes));
+        updateBalance();
+      } else {
+        document.getElementById('redeem-result').textContent = "❌ Invalid code.";
+      }
+    }
+
+    // -----------------------------
+    // Stonks Market
+    // -----------------------------
+    function randomFluctuate(price) {
+      const change = (Math.random() * 0.1 - 0.05);
+      return Math.max(10, price + price * change);
+    }
+
+    function updateStonksPrices() {
+      for (let key in stonks) {
+        stonks[key].price = parseFloat(randomFluctuate(stonks[key].price).toFixed(2));
+      }
+      renderStonks();
+      saveData();
+    }
+
+    function buyStonk(name) {
+      const s = stonks[name];
+      if (balance >= s.price) {
+        balance -= s.price;
+        s.owned++;
+        updateBalance();
+        renderStonks();
+      } else {
+        alert("Not enough Kiwi to buy " + name + "!");
+      }
+    }
+
+    function sellStonk(name) {
+      const s = stonks[name];
+      if (s.owned > 0) {
+        balance += s.price;
+        s.owned--;
+        updateBalance();
+        renderStonks();
+      } else {
+        alert("You don't own any " + name + " to sell!");
+      }
+    }
+
+    function renderStonks() {
+      const div = document.getElementById('stonks');
+      div.innerHTML = "";
+      for (let name in stonks) {
+        const s = stonks[name];
+        div.innerHTML += `
+          <div class="stonk">
+            <span>${name} — ${s.price.toFixed(2)} Kiwi (Owned: ${s.owned})</span>
+            <div>
+              <button onclick="buyStonk('${name}')">Buy</button>
+              <button onclick="sellStonk('${name}')">Sell</button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // -----------------------------
+    // Init
+    // -----------------------------
+    updateBalance();
+    renderStonks();
+    setInterval(updateStonksPrices, 30000);
+  </script>
+</body>
+</html>
