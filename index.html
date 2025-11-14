@@ -229,7 +229,6 @@
       kiwiJuice: { price: 120, owned: 0 }
     };
     const redeemedCodes = JSON.parse(localStorage.getItem('kiwi_redeemed')) || [];
-    const transferCodes = JSON.parse(localStorage.getItem('kiwi_codes')) || {};
     const transactions = JSON.parse(localStorage.getItem('kiwi_transactions')) || [];
     let loan = JSON.parse(localStorage.getItem('kiwi_loan')) || { amount: 0, timestamp: 0 };
 
@@ -241,7 +240,6 @@
       localStorage.setItem('kiwi_lastMine', lastMine);
       localStorage.setItem('kiwi_stonks', JSON.stringify(stonks));
       localStorage.setItem('kiwi_redeemed', JSON.stringify(redeemedCodes));
-      localStorage.setItem('kiwi_codes', JSON.stringify(transferCodes));
       localStorage.setItem('kiwi_transactions', JSON.stringify(transactions));
       localStorage.setItem('kiwi_loan', JSON.stringify(loan));
     }
@@ -293,11 +291,10 @@
         return;
       }
 
-      const code = generateCode();
-      transferCodes[code] = amt;
+      const randomCode = generateCode();
+      const code = amt + "-" + randomCode;
       balance -= amt;
 
-      localStorage.setItem('kiwi_codes', JSON.stringify(transferCodes));
       updateBalance();
 
       document.getElementById('transfer-result').innerHTML = `
@@ -308,21 +305,24 @@
     }
 
     function redeemKiwi() {
-      const code = document.getElementById('redeem-code').value.trim().toUpperCase();
-      if (redeemedCodes.includes(code)) {
-        document.getElementById('redeem-result').textContent = "⚠️ Code already redeemed!";
-        return;
-      }
-
-      if (transferCodes[code]) {
-        const amt = transferCodes[code];
-        balance += amt;
-        redeemedCodes.push(code);
-        delete transferCodes[code];
-        document.getElementById('redeem-result').textContent = `🎉 Redeemed ${amt} Kiwi successfully!`;
-        localStorage.setItem('kiwi_codes', JSON.stringify(transferCodes));
-        addTransaction(`Redeemed ${amt} Kiwi`);
-        updateBalance();
+      const code = document.getElementById('redeem-code').value.trim();
+      const parts = code.split('-');
+      if (parts.length === 2) {
+        const amt = parseFloat(parts[0]);
+        const random = parts[1];
+        if (random.length === 8 && !isNaN(amt) && amt > 0) {
+          if (redeemedCodes.includes(code)) {
+            document.getElementById('redeem-result').textContent = "⚠️ Code already redeemed!";
+            return;
+          }
+          balance += amt;
+          redeemedCodes.push(code);
+          document.getElementById('redeem-result').textContent = `🎉 Redeemed ${amt} Kiwi successfully!`;
+          addTransaction(`Redeemed ${amt} Kiwi`);
+          updateBalance();
+        } else {
+          document.getElementById('redeem-result').textContent = "❌ Invalid code.";
+        }
       } else {
         document.getElementById('redeem-result').textContent = "❌ Invalid code.";
       }
