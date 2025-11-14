@@ -29,7 +29,7 @@
 
 <div class="box">
     <h3>Redeem Transfer Code</h3>
-    <input id="redeemCode" type="text" placeholder="Paste full sentence code">
+    <input id="redeemCode" type="text" placeholder="Enter 30-digit code">
     <button onclick="redeem()">Redeem</button>
     <p id="redeemMsg"></p>
 </div>
@@ -49,21 +49,8 @@ function addKiwi() {
     document.getElementById("balance").textContent = balance;
 }
 
-// =========================
-//  Random Word Generator
-// =========================
-const words = [
-    "faredo","luma","karin","dasko","vintel","mora","janik","sorla",
-    "belto","ranix","almar","tovin","sirlo","karo","dantos","vexal"
-];
-
-function randomWord() {
-    return words[Math.floor(Math.random() * words.length)];
-}
-
 // ============================================================
-//         TRANSFER CODE GENERATION (0–10000)
-//         Hidden digits inside a 30-digit block
+//           TRANSFER CODE GENERATION (supports 0 - 10000)
 // ============================================================
 
 function generateTransferCode(amount) {
@@ -71,43 +58,31 @@ function generateTransferCode(amount) {
         return "ERR: Amount must be 0 - 10000";
     }
 
-    // pad amount → 6 digits
+    // Pad amount to 6 digits → supports up to 999999 safely
     let amtStr = amount.toString().padStart(6, "0");
 
-    // random 30-digit number
+    // Generate 30-digit random code
     let code = "";
     for (let i = 0; i < 30; i++) {
         code += Math.floor(Math.random() * 10);
     }
 
-    // insert amount digits at fixed positions
-    let positions = [4, 9, 14, 19, 24, 29];
-    let arr = code.split("");
+    // Insert amount digits into fixed positions (1-indexed)
+    // Positions: 5, 10, 15, 20, 25, 30
+    let positions = [4, 9, 14, 19, 24, 29]; // 0-indexed
+    let newCode = code.split("");
 
     for (let i = 0; i < 6; i++) {
-        arr[positions[i]] = amtStr[i];
+        newCode[positions[i]] = amtStr[i];
     }
 
-    let encoded = arr.join("");
-
-    // FINAL SENTENCE FORMAT
-    return `${randomWord()} ${randomWord()} some amount to transfer d${encoded}`;
-}
-
-function extractNumericCode(sentence) {
-    let idx = sentence.indexOf("d");
-    if (idx === -1) return null;
-
-    let possible = sentence.substring(idx + 1).replace(/\D/g, "");
-
-    if (possible.length < 30) return null;
-
-    return possible.substring(0, 30);
+    return newCode.join("");
 }
 
 function decodeTransferCode(code) {
-    if (!code || code.length !== 30) return -1;
+    if (code.length !== 30) return -1;
 
+    // Extract amount digits (6 digits)
     let positions = [4, 9, 14, 19, 24, 29];
     let digits = "";
 
@@ -117,11 +92,11 @@ function decodeTransferCode(code) {
         digits += d;
     }
 
-    return parseInt(digits);
+    return parseInt(digits); // this gives the real amount
 }
 
 // ===============================================
-//                  UI
+//            UI Actions
 // ===============================================
 
 function generateCode() {
@@ -143,21 +118,13 @@ function generateCode() {
     document.getElementById("balance").textContent = balance;
 
     document.getElementById("generatedCode").innerHTML =
-        `✅ Transfer Code:<br><b>${code}</b>`;
+        `✅ Transfer Code: <b>${code}</b>`;
 }
 
 function redeem() {
-    let sentence = document.getElementById("redeemCode").value;
+    let code = document.getElementById("redeemCode").value;
 
-    let numeric = extractNumericCode(sentence);
-
-    if (!numeric) {
-        document.getElementById("redeemMsg").innerHTML = "❌ Invalid format.";
-        return;
-    }
-
-    let amount = decodeTransferCode(numeric);
-
+    let amount = decodeTransferCode(code);
     if (amount < 0) {
         document.getElementById("redeemMsg").innerHTML = "❌ Invalid code.";
         return;
