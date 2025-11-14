@@ -3,19 +3,18 @@
 <head>
 <title>Kiwi Transfer System</title>
 <style>
-    body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+    body { font-family: Arial; max-width: 700px; margin: auto; padding: 20px; }
     input { padding: 8px; margin: 5px 0; width: 100%; }
-    button { padding: 10px; width: 100%; margin-top: 10px; }
-    .box { background: #f2f2f2; padding: 15px; border-radius: 8px; margin-top: 15px; }
+    button { padding: 10px; width: 100%; margin-top: 10px; cursor:pointer; }
+    .box { background: #f4f4f4; padding: 15px; border-radius: 8px; margin-top: 20px; }
 </style>
 </head>
 <body>
 
-<h2>Kiwi Balance System</h2>
+<h2>🍐 Kiwi Transfer System</h2>
 
 <div class="box">
     <h3>Balance: <span id="balance">0</span> Kiwi</h3>
-
     <input id="add" type="number" placeholder="Add Kiwi">
     <button onclick="addKiwi()">Add</button>
 </div>
@@ -29,7 +28,7 @@
 
 <div class="box">
     <h3>Redeem Transfer Code</h3>
-    <input id="redeemCode" type="text" placeholder="Enter 30-digit code">
+    <input id="redeemCode" type="text" placeholder="Paste full sentence">
     <button onclick="redeem()">Redeem</button>
     <p id="redeemMsg"></p>
 </div>
@@ -38,71 +37,88 @@
 let balance = 0;
 document.getElementById("balance").textContent = balance;
 
-// =========================
-//   Add Kiwi
-// =========================
+// Add Kiwi
 function addKiwi() {
     let amount = parseInt(document.getElementById("add").value);
-    if (isNaN(amount) || amount <= 0) return;
-
+    if (!amount || amount <= 0) return;
     balance += amount;
     document.getElementById("balance").textContent = balance;
 }
 
-// ============================================================
-//           TRANSFER CODE GENERATION (supports 0 - 10000)
-// ============================================================
+// Random words list
+const words = [
+    "faredo","luma","karin","dasko","vintel","mora","janik","sorla",
+    "belto","ranix","almar","tovin","sirlo","karo","dantos","vexal"
+];
+
+function randomWord() {
+    return words[Math.floor(Math.random() * words.length)];
+}
+
+// =====================
+// ENCODING SYSTEM
+// =====================
 
 function generateTransferCode(amount) {
     if (amount < 0 || amount > 10000) {
-        return "ERR: Amount must be 0 - 10000";
+        return "ERR: Amount must be between 0 and 10000";
     }
 
-    // Pad amount to 6 digits → supports up to 999999 safely
+    // 6-digit padded amount
     let amtStr = amount.toString().padStart(6, "0");
 
-    // Generate 30-digit random code
+    // create 40 random digits
     let code = "";
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 40; i++) {
         code += Math.floor(Math.random() * 10);
     }
 
-    // Insert amount digits into fixed positions (1-indexed)
-    // Positions: 5, 10, 15, 20, 25, 30
-    let positions = [4, 9, 14, 19, 24, 29]; // 0-indexed
-    let newCode = code.split("");
+    // positions to embed
+    const pos = [3, 8, 13, 18, 23, 28];
 
+    let arr = code.split("");
     for (let i = 0; i < 6; i++) {
-        newCode[positions[i]] = amtStr[i];
+        arr[pos[i]] = amtStr[i];
     }
 
-    return newCode.join("");
+    let numericCode = arr.join("");
+
+    // wrap inside sentence
+    return `${randomWord()} ${randomWord()} some amount to transfer d${numericCode}`;
 }
 
-function decodeTransferCode(code) {
-    if (code.length !== 30) return -1;
+// Extract 40 digits after the 'd'
+function extractNumeric(sentence) {
+    let i = sentence.indexOf("d");
+    if (i === -1) return null;
 
-    // Extract amount digits (6 digits)
-    let positions = [4, 9, 14, 19, 24, 29];
-    let digits = "";
+    let onlyDigits = sentence.substring(i + 1).replace(/\D/g, "");
 
-    for (let pos of positions) {
-        let d = code[pos];
-        if (isNaN(parseInt(d))) return -1;
-        digits += d;
+    if (onlyDigits.length < 40) return null;
+
+    return onlyDigits.substring(0, 40);
+}
+
+// Decode from positions
+function decodeAmount(numeric) {
+    const pos = [3, 8, 13, 18, 23, 28];
+    let result = "";
+
+    for (let p of pos) {
+        result += numeric[p];
     }
 
-    return parseInt(digits); // this gives the real amount
+    return parseInt(result);
 }
 
-// ===============================================
-//            UI Actions
-// ===============================================
+// =====================
+// UI HANDLERS
+// =====================
 
 function generateCode() {
     let amount = parseInt(document.getElementById("transferAmount").value);
 
-    if (isNaN(amount) || amount < 0 || amount > 10000) {
+    if (isNaN(amount) || amount < 1 || amount > 10000) {
         document.getElementById("generatedCode").innerHTML = "❌ Invalid amount.";
         return;
     }
@@ -118,14 +134,20 @@ function generateCode() {
     document.getElementById("balance").textContent = balance;
 
     document.getElementById("generatedCode").innerHTML =
-        `✅ Transfer Code: <b>${code}</b>`;
+        `✅ Transfer Code:<br><b>${code}</b>`;
 }
 
 function redeem() {
-    let code = document.getElementById("redeemCode").value;
+    let sentence = document.getElementById("redeemCode").value.trim();
 
-    let amount = decodeTransferCode(code);
-    if (amount < 0) {
+    let numeric = extractNumeric(sentence);
+    if (!numeric) {
+        document.getElementById("redeemMsg").innerHTML = "❌ Invalid code format.";
+        return;
+    }
+
+    let amount = decodeAmount(numeric);
+    if (isNaN(amount)) {
         document.getElementById("redeemMsg").innerHTML = "❌ Invalid code.";
         return;
     }
@@ -134,7 +156,7 @@ function redeem() {
     document.getElementById("balance").textContent = balance;
 
     document.getElementById("redeemMsg").innerHTML =
-        `🎉 Successfully redeemed <b>${amount} Kiwi</b>!`;
+        `🎉 Redeemed <b>${amount}</b> Kiwi!`;
 }
 </script>
 
