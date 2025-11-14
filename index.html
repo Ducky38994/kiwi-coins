@@ -291,9 +291,8 @@
         return;
       }
 
-      const encodedAmt = btoa(amt.toString());
       const randomCode = generateCode();
-      const code = encodedAmt + randomCode;
+      const code = amt + "-" + randomCode;
       balance -= amt;
 
       updateBalance();
@@ -307,25 +306,24 @@
 
     function redeemKiwi() {
       const code = document.getElementById('redeem-code').value.trim();
-      if (code.length < 8) {
-        document.getElementById('redeem-result').textContent = "❌ Invalid code.";
-        return;
-      }
-      const randomPart = code.slice(-8);
-      const encodedPart = code.slice(0, -8);
-      try {
-        const amt = parseFloat(atob(encodedPart));
-        if (isNaN(amt) || amt <= 0) throw new Error("Invalid amount");
-        if (redeemedCodes.includes(code)) {
-          document.getElementById('redeem-result').textContent = "⚠️ Code already redeemed!";
-          return;
+      const parts = code.split('-');
+      if (parts.length === 2) {
+        const amt = parseFloat(parts[0]);
+        const random = parts[1];
+        if (random.length === 8 && !isNaN(amt) && amt > 0) {
+          if (redeemedCodes.includes(code)) {
+            document.getElementById('redeem-result').textContent = "⚠️ Code already redeemed!";
+            return;
+          }
+          balance += amt;
+          redeemedCodes.push(code);
+          document.getElementById('redeem-result').textContent = `🎉 Redeemed ${amt} Kiwi successfully!`;
+          addTransaction(`Redeemed ${amt} Kiwi`);
+          updateBalance();
+        } else {
+          document.getElementById('redeem-result').textContent = "❌ Invalid code.";
         }
-        balance += amt;
-        redeemedCodes.push(code);
-        document.getElementById('redeem-result').textContent = `🎉 Redeemed ${amt} Kiwi successfully!`;
-        addTransaction(`Redeemed ${amt} Kiwi`);
-        updateBalance();
-      } catch (e) {
+      } else {
         document.getElementById('redeem-result').textContent = "❌ Invalid code.";
       }
     }
