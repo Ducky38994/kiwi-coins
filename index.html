@@ -1,466 +1,315 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🍐 Kiwi Coins</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
-      color: #e0e0e0;
-      font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 20px;
-      min-height: 100vh;
-    }
-    .wrap {
-      max-width: 800px;
-      margin: auto;
-      background: rgba(0, 0, 0, 0.8);
-      border: 2px solid #4CAF50;
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    }
-    h1 {
-      text-align: center;
-      color: #4CAF50;
-      font-size: 2.5em;
-      margin-bottom: 20px;
-      text-shadow: 0 0 10px #4CAF50;
-    }
-    .balance {
-      background: linear-gradient(90deg, #2e2e2e, #1e1e1e);
-      border: 2px solid #4CAF50;
-      padding: 15px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 1.5em;
-      margin-bottom: 30px;
-      border-radius: 10px;
-      color: #4CAF50;
-    }
-    .nav {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-    }
-    .nav button {
-      background: #2e2e2e;
-      color: #e0e0e0;
-      border: 1px solid #555;
-      padding: 10px 15px;
-      margin: 5px;
-      cursor: pointer;
-      border-radius: 5px;
-      transition: all 0.3s ease;
-    }
-    .nav button.active {
-      background: #4CAF50;
-      color: #fff;
-    }
-    .nav button:hover {
-      background: #4CAF50;
-      color: #fff;
-    }
-    .section {
-      display: none;
-      margin-bottom: 40px;
-      padding: 20px;
-      border: 1px solid #555;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.05);
-    }
-    .section.active {
-      display: block;
-    }
-    .section h3 {
-      color: #4CAF50;
-      margin-bottom: 15px;
-      font-size: 1.3em;
-    }
-    button {
-      background: linear-gradient(90deg, #4CAF50, #66BB6A);
-      color: #fff;
-      border: none;
-      padding: 10px 15px;
-      cursor: pointer;
-      margin: 5px;
-      border-radius: 5px;
-      font-weight: bold;
-      transition: all 0.3s ease;
-    }
-    button:hover {
-      background: linear-gradient(90deg, #66BB6A, #4CAF50);
-      transform: scale(1.05);
-    }
-    input {
-      background: #2e2e2e;
-      color: #e0e0e0;
-      border: 1px solid #555;
-      padding: 10px;
-      margin: 5px 0;
-      width: calc(100% - 22px);
-      border-radius: 5px;
-    }
-    .stonk {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 5px;
-    }
-    .transaction {
-      padding: 10px;
-      margin-bottom: 5px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 5px;
-      font-size: 0.9em;
-    }
-    .loan-info {
-      margin-top: 10px;
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 5px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kiwi Coins</title>
+<style>
+body{background:#0d0d0d;color:#c8ffc8;font-family:Arial;margin:0;padding:20px}
+#app{max-width:800px;margin:auto;background:#000000aa;border:2px solid #0f0;border-radius:15px;padding:20px}
+h1{text-align:center;color:#00ff66;text-shadow:0 0 10px #00ff66;margin:10px 0}
+.bal{text-align:center;font-size:23px;margin-bottom:20px;color:#00ff66;border:1px solid #0f0;padding:10px;border-radius:10px}
+.nav{display:flex;flex-wrap:wrap;justify-content:center}
+.nav button{background:#1a1a1a;border:1px solid #333;color:#ccc;padding:8px 15px;margin:5px;border-radius:6px;cursor:pointer}
+.nav button.active,.nav button:hover{background:#00ff66;color:#000}
+.sec{display:none;margin-top:20px;padding:15px;border:1px solid #333;border-radius:10px;background:#ffffff05}
+.sec.active{display:block}
+input{width:100%;padding:10px;margin:8px 0;background:#111;border:1px solid:#333;color:#0f0;border-radius:6px}
+button.action{background:#00ff66;border:none;padding:10px 15px;color:#000;font-weight:bold;border-radius:6px;cursor:pointer;margin-top:5px;width:100%}
+button.action:hover{opacity:.8}
+.stonk{display:flex;justify-content:space-between;background:#ffffff08;padding:10px;border-radius:6px;margin-top:6px}
+.tx{background:#ffffff08;padding:8px;border-radius:6px;margin:5px 0;font-size:13px}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>🍐 Kiwi Coins</h1>
-    <div class="balance" id="balance">0 Kiwi</div>
+<div id="app">
+<h1>🍐 Kiwi Coins</h1>
 
-    <!-- Navigation -->
-    <div class="nav">
-      <button id="nav-mining" class="active">⛏️ Mining</button>
-      <button id="nav-stonks">📈 Stonks</button>
-      <button id="nav-transfer">💸 Transfer & Redeem</button>
-      <button id="nav-loan">🏦 Loan</button>
-      <button id="nav-transactions">📜 Transactions</button>
-    </div>
+<div class="bal" id="bal">0 Kiwi</div>
 
-    <!-- Mining Area -->
-    <div id="section-mining" class="section active">
-      <h3>⛏️ Mining Area</h3>
-      <p>Earn 10 Kiwi for every full hour of uptime. Mine to claim your rewards!</p>
-      <button onclick="mine()">Mine Kiwi</button>
-      <div id="mining-result"></div>
-    </div>
+<div class="nav">
+<button id="b1" class="active">Mining</button>
+<button id="b2">Stonks</button>
+<button id="b3">Transfer</button>
+<button id="b4">Loan</button>
+<button id="b5">History</button>
+</div>
 
-    <!-- Stonks Market -->
-    <div id="section-stonks" class="section">
-      <h3>📈 Stonks Market</h3>
-      <p>Invest in volatile assets. Prices fluctuate every 30 seconds!</p>
-      <div id="stonks"></div>
-    </div>
+<div id="s1" class="sec active">
+<h3>⛏️ Mining</h3>
+<p>Earn 10 Kiwi per hour.</p>
+<button class="action" onclick="mine()">Mine</button>
+<div id="mineOut"></div>
+</div>
 
-    <!-- Transfer and Redeem -->
-    <div id="section-transfer" class="section">
-      <h3>💸 Transfer and Redeem</h3>
-      <div>
-        <h4>Transfer Kiwi</h4>
-        <input type="number" id="transfer-amount" placeholder="Amount to Transfer" />
-        <button onclick="transferKiwi()">Generate Transfer Code</button>
-        <div id="transfer-result"></div>
-      </div>
-      <div style="margin-top: 20px;">
-        <h4>Redeem Kiwi</h4>
-        <input type="text" id="redeem-code" placeholder="Enter Redeem Code" />
-        <button onclick="redeemKiwi()">Redeem</button>
-        <div id="redeem-result"></div>
-      </div>
-    </div>
+<div id="s2" class="sec">
+<h3>📈 Stonks</h3>
 
-    <!-- Loan -->
-    <div id="section-loan" class="section">
-      <h3>🏦 Loan</h3>
-      <p>Borrow Kiwi with 10% interest per hour. Repay to avoid penalties.</p>
-      <input type="number" id="loan-amount" placeholder="Amount to Borrow" />
-      <button onclick="takeLoan()">Take Loan</button>
-      <button onclick="repayLoan()">Repay Loan</button>
-      <div id="loan-result"></div>
-      <div class="loan-info" id="loan-info">No active loan.</div>
-    </div>
+<h3 style="color:#0f0">⭐ Main Kiwi Stonk (500–1000)</h3>
+<div id="mainStonkBox"></div>
 
-    <!-- Transactions History -->
-    <div id="section-transactions" class="section">
-      <h3>📜 Transactions History</h3>
-      <div id="transactions"></div>
-    </div>
-  </div>
+<h3 style="margin-top:20px;color:#0f0">🔥 Cool Stonks (20–2000)</h3>
+<div id="stonkBox"></div>
+</div>
 
-  <script>
-    // -----------------------------
-    // Navigation
-    // -----------------------------
-    const navButtons = document.querySelectorAll('.nav button');
-    const sections = document.querySelectorAll('.section');
+<div id="s3" class="sec">
+<h3>💸 Transfer</h3>
+<input id="amt" type="number" placeholder="Amount">
+<button class="action" onclick="gen()">Generate Encrypted Code</button>
+<div id="codeOut"></div>
 
-    navButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // Remove active class from all buttons and sections
-        navButtons.forEach(btn => btn.classList.remove('active'));
-        sections.forEach(sec => sec.classList.remove('active'));
+<h4>Redeem</h4>
+<input id="redeem" placeholder="Enter code">
+<button class="action" onclick="redeemCode()">Redeem</button>
+<div id="redeemOut"></div>
 
-        // Add active class to clicked button and corresponding section
-        button.classList.add('active');
-        const sectionId = button.id.replace('nav-', 'section-');
-        document.getElementById(sectionId).classList.add('active');
-      });
-    });
+<h4>QR Code</h4>
+<div id="qr"></div>
+</div>
 
-    // -----------------------------
-    // Persistent Data
-    // -----------------------------
-    let balance = parseFloat(localStorage.getItem('kiwi_balance')) || 2000;
-    let lastMine = parseFloat(localStorage.getItem('kiwi_lastMine')) || Date.now();
-    const stonks = JSON.parse(localStorage.getItem('kiwi_stonks')) || {
-      wheat: { price: 100, owned: 0 },
-      pokemon: { price: 250, owned: 0 },
-      gems: { price: 400, owned: 0 },
-      banana: { price: 75, owned: 0 },
-      techChip: { price: 600, owned: 0 },
-      silver: { price: 500, owned: 0 },
-      iron: { price: 300, owned: 0 },
-      kiwiJuice: { price: 120, owned: 0 }
-    };
-    const redeemedCodes = JSON.parse(localStorage.getItem('kiwi_redeemed')) || [];
-    const transactions = JSON.parse(localStorage.getItem('kiwi_transactions')) || [];
-    let loan = JSON.parse(localStorage.getItem('kiwi_loan')) || { amount: 0, timestamp: 0 };
+<div id="s4" class="sec">
+<h3>🏦 Loan</h3>
+<p>Repayment fee: 5% of borrowed amount.</p>
+<input id="loanAmt" type="number" placeholder="Loan amount">
+<button class="action" onclick="takeLoan()">Take Loan</button>
+<button class="action" onclick="repayLoan()">Repay Loan</button>
+<div id="loanOut"></div>
+<div id="loanInfo"></div>
+</div>
 
-    // -----------------------------
-    // Save & Update
-    // -----------------------------
-    function saveData() {
-      localStorage.setItem('kiwi_balance', balance);
-      localStorage.setItem('kiwi_lastMine', lastMine);
-      localStorage.setItem('kiwi_stonks', JSON.stringify(stonks));
-      localStorage.setItem('kiwi_redeemed', JSON.stringify(redeemedCodes));
-      localStorage.setItem('kiwi_transactions', JSON.stringify(transactions));
-      localStorage.setItem('kiwi_loan', JSON.stringify(loan));
-    }
+<div id="s5" class="sec">
+<h3>📜 History</h3>
+<div id="txBox"></div>
+</div>
 
-    function updateBalance() {
-      document.getElementById('balance').textContent = `${balance.toFixed(2)} Kiwi`;
-      saveData();
-    }
+</div>
 
-    function addTransaction(desc) {
-      transactions.unshift(`${new Date().toLocaleString()}: ${desc}`);
-      if (transactions.length > 50) transactions.pop(); // Keep last 50
-      renderTransactions();
-      saveData();
-    }
+<script>
+const $=e=>document.getElementById(e);
 
-    // -----------------------------
-    // Mining
-    // -----------------------------
-    function mine() {
-      const now = Date.now();
-      const hoursPassed = Math.floor((now - lastMine) / (1000 * 60 * 60));
-      if (hoursPassed >= 1) {
-        const reward = hoursPassed * 10;
-        balance += reward;
-        lastMine = now;
-        document.getElementById('mining-result').textContent = `⛏️ You mined ${reward} Kiwi (${hoursPassed}h uptime).`;
-        addTransaction(`Mined ${reward} Kiwi`);
-        updateBalance();
-      } else {
-        document.getElementById('mining-result').textContent = "⏳ You need at least 1 hour of uptime before mining again.";
-      }
-    }
+let bal=parseFloat(localStorage.bal||"5000");
+let lastMine=parseFloat(localStorage.mine||Date.now());
+let tx=JSON.parse(localStorage.tx||"[]");
+let redeemed=JSON.parse(localStorage.red||"[]");
+let loan=JSON.parse(localStorage.loan||"{\"amt\":0}");
 
-    // -----------------------------
-    // Transfer & Redeem System
-    // -----------------------------
-    function generateCode() {
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      let code = "";
-      for (let i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-      return code;
-    }
+let stonks=JSON.parse(localStorage.stonk||"{}");
+if(Object.keys(stonks).length===0)
+    stonks={wheat:{p:100,o:0},gems:{p:300,o:0},iron:{p:150,o:0},cyber:{p:500,o:0},kiwiOil:{p:250,o:0}};
 
-    function transferKiwi() {
-      const amt = parseFloat(document.getElementById('transfer-amount').value);
-      if (isNaN(amt) || amt <= 0 || amt > balance) {
-        document.getElementById('transfer-result').textContent = "❌ Invalid amount.";
-        return;
-      }
+// ⭐ MAIN STONK (500–1000)
+let mainStonk = JSON.parse(localStorage.mainStonk || '{"p":700,"o":0}');
 
-      const randomCode = generateCode();
-      const code = amt + "-" + randomCode;
-      balance -= amt;
+function save(){
+    localStorage.bal=bal;
+    localStorage.mine=lastMine;
+    localStorage.tx=JSON.stringify(tx);
+    localStorage.red=JSON.stringify(redeemed);
+    localStorage.loan=JSON.stringify(loan);
+    localStorage.stonk=JSON.stringify(stonks);
+    localStorage.mainStonk = JSON.stringify(mainStonk);
+}
 
-      updateBalance();
+function nav(i){
+    ["b1","b2","b3","b4","b5"].forEach((b,x)=>$(b).classList.toggle("active",x==i));
+    ["s1","s2","s3","s4","s5"].forEach((s,x)=>$(s).classList.toggle("active",x==i));
+}
 
-      document.getElementById('transfer-result').innerHTML = `
-        ✅ Transfer Code Generated:<br><b>${code}</b><br>
-        Share this code with someone to redeem ${amt} Kiwi.
-      `;
-      addTransaction(`Transferred ${amt} Kiwi (Code: ${code})`);
-    }
+["b1","b2","b3","b4","b5"].forEach((b,i)=>$(b).onclick=()=>nav(i));
 
-    function redeemKiwi() {
-      const code = document.getElementById('redeem-code').value.trim();
-      const parts = code.split('-');
-      if (parts.length === 2) {
-        const amt = parseFloat(parts[0]);
-        const random = parts[1];
-        if (random.length === 8 && !isNaN(amt) && amt > 0) {
-          if (redeemedCodes.includes(code)) {
-            document.getElementById('redeem-result').textContent = "⚠️ Code already redeemed!";
-            return;
-          }
-          balance += amt;
-          redeemedCodes.push(code);
-          document.getElementById('redeem-result').textContent = `🎉 Redeemed ${amt} Kiwi successfully!`;
-          addTransaction(`Redeemed ${amt} Kiwi`);
-          updateBalance();
-        } else {
-          document.getElementById('redeem-result').textContent = "❌ Invalid code.";
-        }
-      } else {
-        document.getElementById('redeem-result').textContent = "❌ Invalid code.";
-      }
-    }
+function upd(){ $("bal").innerHTML=bal.toFixed(2)+" Kiwi"; save() }
+upd();
 
-    // -----------------------------
-    // Stonks Market
-    // -----------------------------
-    function randomFluctuate(price) {
-      const change = (Math.random() * 0.1 - 0.05);
-      return Math.max(10, price + price * change);
-    }
+function addTx(t){ tx.unshift(new Date().toLocaleString()+" — "+t); if(tx.length>50)tx.pop(); renderTx() }
+function renderTx(){ $("txBox").innerHTML=tx.map(t=>`<div class='tx'>${t}</div>`).join("") }
+renderTx();
 
-    function updateStonksPrices() {
-      for (let key in stonks) {
-        stonks[key].price = parseFloat(randomFluctuate(stonks[key].price).toFixed(2));
-      }
-      renderStonks();
-      saveData();
-    }
+// Mining
+function mine(){
+    let now=Date.now(),h=Math.floor((now-lastMine)/36e5);
+    if(h<1){ $("mineOut").innerHTML="⏳ Need 1 hour uptime."; return }
+    let r=h*10;
+    bal+=r;
+    lastMine=now;
+    addTx("Mined "+r+" Kiwi");
+    upd();
+    $("mineOut").innerHTML="⛏️+"+r+" Kiwi";
+}
 
-    function buyStonk(name) {
-      const s = stonks[name];
-      if (balance >= s.price) {
-        balance -= s.price;
-        s.owned++;
-        addTransaction(`Bought 1 ${name} for ${s.price} Kiwi`);
-        updateBalance();
-        renderStonks();
-      } else {
-        alert("Not enough Kiwi to buy " + name + "!");
-      }
-    }
+// --- Smooth Stonk Movement ---
+function smoothChaos(p,min,max){
+    let change = (Math.random()*0.10 - 0.05); 
+    let np = p*(1+change);
+    if(np < min) np = min;
+    if(np > max) np = max;
+    return np;
+}
 
-    function sellStonk(name) {
-      const s = stonks[name];
-      if (s.owned > 0) {
-        balance += s.price;
-        s.owned--;
-        addTransaction(`Sold 1 ${name} for ${s.price} Kiwi`);
-        updateBalance();
-        renderStonks();
-      } else {
-        alert("You don't own any " + name + " to sell!");
-      }
-    }
-
-    function renderStonks() {
-      const div = document.getElementById('stonks');
-      div.innerHTML = "";
-      for (let name in stonks) {
-        const s = stonks[name];
-        div.innerHTML += `
-          <div class="stonk">
-            <span>${name} — ${s.price.toFixed(2)} Kiwi (Owned: ${s.owned})</span>
+// ⭐ MAIN STONK SECTION
+function renderMainStonk(){
+    $("mainStonkBox").innerHTML = `
+        <div class='stonk'>
+            <span>KiwiStonk: ${mainStonk.p.toFixed(2)} (Own ${mainStonk.o})</span>
             <div>
-              <button onclick="buyStonk('${name}')">Buy</button>
-              <button onclick="sellStonk('${name}')">Sell</button>
+                <button onclick="buyMain()">Buy</button>
+                <button onclick="sellMain()">Sell</button>
             </div>
-          </div>
-        `;
-      }
-    }
+        </div>`;
+}
 
-    // -----------------------------
-    // Loan System
-    // -----------------------------
-    function takeLoan() {
-      const amt = parseFloat(document.getElementById('loan-amount').value);
-      if (isNaN(amt) || amt <= 0) {
-        document.getElementById('loan-result').textContent = "❌ Invalid amount.";
-        return;
-      }
-      if (loan.amount > 0) {
-        document.getElementById('loan-result').textContent = "❌ Pay off your current loan first.";
-        return;
-      }
-      loan.amount = amt;
-      loan.timestamp = Date.now();
-      balance += amt;
-      addTransaction(`Took loan of ${amt} Kiwi`);
-      updateBalance();
-      updateLoanInfo();
-      document.getElementById('loan-result').textContent = `✅ Loan of ${amt} Kiwi taken.`;
+function buyMain(){
+    if(bal >= mainStonk.p){
+        bal -= mainStonk.p;
+        mainStonk.o++;
+        addTx("Bought Main Kiwi Stonk for "+mainStonk.p);
+        upd(); renderMainStonk();
     }
-
-    function repayLoan() {
-      if (loan.amount <= 0) {
-        document.getElementById('loan-result').textContent = "❌ No active loan.";
-        return;
-      }
-      const hours = Math.floor((Date.now() - loan.timestamp) / (1000 * 60 * 60));
-      const interest = loan.amount * 0.1 * hours;
-      const total = loan.amount + interest;
-      if (balance >= total) {
-        balance -= total;
-        addTransaction(`Repaid loan: ${loan.amount} + ${interest.toFixed(2)} interest`);
-        loan.amount = 0;
-        loan.timestamp = 0;
-        updateBalance();
-        updateLoanInfo();
-        document.getElementById('loan-result').textContent = `✅ Loan repaid: ${total.toFixed(2)} Kiwi.`;
-      } else {
-        document.getElementById('loan-result').textContent = `❌ Not enough Kiwi. Need ${total.toFixed(2)}.`;
-      }
+}
+function sellMain(){
+    if(mainStonk.o > 0){
+        mainStonk.o--;
+        bal += mainStonk.p;
+        addTx("Sold Main Kiwi Stonk for "+mainStonk.p);
+        upd(); renderMainStonk();
     }
+}
 
-    function updateLoanInfo() {
-      const info = document.getElementById('loan-info');
-      if (loan.amount > 0) {
-        const hours = Math.floor((Date.now() - loan.timestamp) / (1000 * 60 * 60));
-        const interest = loan.amount * 0.1 * hours;
-        info.textContent = `Active Loan: ${loan.amount} Kiwi + ${interest.toFixed(2)} interest (${hours}h).`;
-      } else {
-        info.textContent = "No active loan.";
-      }
+renderMainStonk();
+
+// COOL STONKS SECTION
+function renderStonks(){
+    let out="";
+    for(let k in stonks){
+        let s=stonks[k];
+        out+=`
+        <div class='stonk'>
+            <span>${k}: ${s.p.toFixed(2)} (Own ${s.o})</span>
+            <div>
+                <button onclick="buy('${k}')">Buy</button>
+                <button onclick="sell('${k}')">Sell</button>
+            </div>
+        </div>`;
     }
+    $("stonkBox").innerHTML=out;
+}
 
-    // -----------------------------
-    // Transactions History
-    // -----------------------------
-    function renderTransactions() {
-      const div = document.getElementById('transactions');
-      div.innerHTML = "";
-      transactions.forEach(t => {
-        div.innerHTML += `<div class="transaction">${t}</div>`;
-      });
+function buy(k){
+    let s=stonks[k];
+    if(bal>=s.p){
+        bal-=s.p;
+        s.o++;
+        addTx("Bought "+k+" for "+s.p);
+        upd(); renderStonks();
     }
+}
 
-    // -----------------------------
-    // Init
-    // -----------------------------
-    updateBalance();
+function sell(k){
+    let s=stonks[k];
+    if(s.o>0){
+        s.o--;
+        bal+=s.p;
+        addTx("Sold "+k+" for "+s.p);
+        upd(); renderStonks();
+    }
+}
+
+renderStonks();
+
+// Update BOTH stonk systems
+setInterval(()=>{
+    mainStonk.p = smoothChaos(mainStonk.p,500,1000);
+    for(let k in stonks)
+        stonks[k].p = smoothChaos(stonks[k].p,20,2000);
+
+    renderMainStonk();
     renderStonks();
-    renderTransactions();
-    updateLoanInfo();
-    setInterval(updateStonksPrices, 30000);
-    setInterval(updateLoanInfo, 60000); // Update loan info every minute
-  </script>
+    save();
+},4000);
+
+// ---------------- Transfer ----------------
+function enc(a){
+    let b="abcdefghijklmnopqrstuvwxyz",c="",d=a.toString();
+    for(let i=0;i<12;i++){
+        c+=b[Math.floor(Math.random()*26)];
+        if(i%Math.floor(Math.random()*2+5)==0&&d.length>0){
+            c+=d[0];
+            d=d.slice(1);
+        }
+    }
+    return c+String.fromCharCode(65+(a%26));
+}
+
+function dec(c){
+    let n="";
+    for(let x of c) if(!isNaN(parseInt(x))) n+=x;
+    let a=parseInt(n);
+    return isNaN(a)||a<=0?null:a;
+}
+
+function gen(){
+    let a=parseFloat($("amt").value);
+    if(!a||a<=0||a>bal){ $("codeOut").innerHTML="❌ Invalid."; return }
+    let code=enc(a);
+    bal-=a;
+    upd();
+    addTx("Transfer "+a+" (code "+code+")");
+    $("codeOut").innerHTML="✔ Code:<br><b>"+code+"</b>";
+    qr(code);
+}
+
+function redeemCode(){
+    let c=$("redeem").value.trim();
+    if(redeemed.includes(c)){ $("redeemOut").innerHTML="⚠ Already used."; return }
+    let a=dec(c);
+    if(!a){ $("redeemOut").innerHTML="❌ Invalid."; return }
+    redeemed.push(c);
+    bal+=a;
+    upd();
+    addTx("Redeemed "+a);
+    $("redeemOut").innerHTML="🎉 +"+a+" Kiwi";
+}
+
+function qr(t){
+    $("qr").innerHTML="<img src='https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="+encodeURIComponent(t)+"'>";
+}
+
+// ---------------- Loan ----------------
+function takeLoan(){
+    let a=parseFloat($("loanAmt").value);
+    if(!a||a<=0){ $("loanOut").innerHTML="❌ Invalid."; return }
+    if(loan.amt>0){ $("loanOut").innerHTML="❌ Already have loan."; return }
+    loan.amt=a;
+    bal+=a;
+    addTx("Loan +"+a);
+    upd();
+    loanInfo();
+}
+
+function repayLoan(){
+    if(loan.amt<=0){ $("loanOut").innerHTML="❌ No loan."; return }
+
+    let fee = loan.amt * 0.05;
+    let total = loan.amt + fee;
+
+    if(bal<total){
+        $("loanOut").innerHTML="❌ Need "+total.toFixed(2);
+        return;
+    }
+
+    bal-=total;
+    addTx("Repaid loan ("+total.toFixed(2)+")");
+    loan.amt=0;
+    upd();
+    loanInfo();
+}
+
+function loanInfo(){
+    $("loanInfo").innerHTML=loan.amt>0
+        ? "Loan active: "+loan.amt+" + 5% fee"
+        : "No loan";
+}
+loanInfo();
+</script>
+
 </body>
 </html>
